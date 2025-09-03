@@ -1,13 +1,14 @@
 import { Router } from 'express';
-import { tasks } from './data.js';
-import { db } from '../database/db.js';
+import { Tarefa } from '../models/Tarefa.js';
 const router = Router();
 
-router.get('/', (req, res) => {
-  db.all('SELECT * FROM tarefas', [], (err, rows) => {
-    if (err) return res.status(500).json({ erro: err.message });
-    res.json(rows);
-  });
+router.get('/', async (req, res) => {
+  try {
+    const tasks = await Tarefa.findAll();
+    return res.json(tasks);
+  } catch (error) {
+    console.log('ERROR: \n', error);
+  }
 });
 
 router.get('/:id', (req, res) => {
