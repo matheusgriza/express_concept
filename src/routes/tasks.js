@@ -3,48 +3,60 @@ import { Tarefa } from '../models/Tarefa.js';
 const router = Router();
 
 router.get('/', async (req, res) => {
+  const tasks = await Tarefa.findAll();
+  return res.json(tasks);
+});
+
+router.get('/:id', async (req, res) => {
   try {
-    const tasks = await Tarefa.findAll();
-    return res.json(tasks);
+    const id = parseInt(req.params.id);
+    const task = await Tarefa.findByPk(id);
+    if (!task) return res.status(404).json({ message: 'Documento não encontrado' });
+    return res.status(200).json(task);
   } catch (error) {
-    console.log('ERROR: \n', error);
+    return res.status(422).json({ error: error.message });
   }
 });
 
-router.get('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  db.get('SELECT * FROM tarefas WHERE id = ?', [id], (err, row) => {
-    if (err) return res.status(500).json({ erro: err.message });
-    if (!row) return res.status(404).json({ erro: 'Tarefa não encontrada' });
-    res.json(row);
-  });
+router.delete('/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const task = await Tarefa.destroy({
+      where: {
+        id,
+      },
+    });
+    return res.status(200).json({ message: 'Documento deletado com sucesso' });
+  } catch (error) {
+    return res.status(422).json({ error: error.message });
+  }
 });
 
-router.delete('/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  db.run('DELETE FROM tarefas WHERE id = ?', [id], function (err) {
-    if (err) return res.status(500).json({ erro: err.message });
-    if (this.changes === 0) return res.status(404).json({ erro: 'Tarefanão encontrada' });
-    res.status(204).send();
-  });
-});
-
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   const { titulo } = req.body;
-  db.run('INSERT INTO tarefas (titulo) VALUES (?)', [titulo], function (err) {
-    if (err) return res.status(500).json({ erro: err.message });
-    res.status(201).json({ id: this.lastID, titulo, concluida: 0 });
-  });
+  try {
+    const tarefa = await Tarefa.create({ titulo: titulo });
+    return res.status(201).json(tarefa);
+  } catch (error) {
+    return res.status(422).json({ error: error.message });
+  }
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
   const id = parseInt(req.params.id);
   const { titulo, concluida } = req.body;
-  db.run('UPDATE tarefas SET titulo = ?, concluida = ? WHERE id = ?', [titulo, concluida ? 1 : 0, id], function (err) {
-    if (err) return res.status(500).json({ erro: err.message });
-    if (this.changes === 0) return res.status(404).json({ erro: 'Tarefa não encontrada' });
-    res.json({ id, titulo, concluida });
-  });
+  try {
+    const tarefa = await Tarefa.findByPk(id);
+    if (!tarefa) return res.status(404).json({ messsage: 'Documento não encontrado' });
+
+    tarefa.titulo = titulo ?? tarefa.titulo;
+    tarefa.concluida = concluida ?? tarefa.concluida;
+    await tarefa.save();
+
+    return res.status(200).json(tarefa);
+  } catch (error) {
+    return res.status(422).json({ error: error.message });
+  }
 });
 
 export { router };
