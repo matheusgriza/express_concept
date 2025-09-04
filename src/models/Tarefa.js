@@ -15,6 +15,7 @@ const Tarefa = sequelize.define(
   },
   {
     tableName: 'tarefas',
+    timestamps: false,
   }
 );
 
