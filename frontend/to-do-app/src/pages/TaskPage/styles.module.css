@@ -1,0 +1,25 @@
+.anchor {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid var(--gray-500);
+  border-radius: 0.3rem;
+  padding: 0.5rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0 2rem;
+}
+
+button {
+  font-weight: 600;
+  height: 5rem;
+  width: 7rem;
+}
+
+button:hover {
+  cursor: pointer;
+}

@@ -1,0 +1,25 @@
+.anchor {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--gray-500);
+  border-radius: 0.3rem;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  padding: 0.4rem;
+  justify-content: space-evenly;
+  gap: 1rem;
+}
+
+li {
+  padding: 0 0.5rem;
+  list-style-type: none;
+}
+
+ul {
+  display: flex;
+  flex-direction: column;
+}
